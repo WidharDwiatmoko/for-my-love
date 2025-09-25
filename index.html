@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>For My Bubu</title>
+    <style>
+        /* Reset & base */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #fffaf5 0%, #fceeea 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #4b3b3b;
+            user-select: none;
+        }
+
+        .envelope {
+            background-color: #fff5f0;
+            border: 2px solid #e2bebe;
+            border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(179, 92, 92, 0.15);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            padding: 40px 36px;
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            color: #b35c5c;
+            margin-bottom: 0.25em;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: 1.5px;
+            text-shadow: 1px 1px 3px rgba(179, 92, 92, 0.3);
+        }
+
+        p.intro {
+            font-size: 18px;
+            margin-bottom: 28px;
+            line-height: 1.6;
+            color: #6a5050;
+            font-style: italic;
+        }
+
+        button.toggle-btn {
+            background-color: #b35c5c;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 32px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 6px 12px rgba(179, 92, 92, 0.4);
+            user-select: none;
+            letter-spacing: 0.7px;
+        }
+
+        button.toggle-btn:hover {
+            background-color: #984949;
+            box-shadow: 0 8px 16px rgba(152, 73, 73, 0.6);
+        }
+
+        /* Input kode */
+        .code-container {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .code-container input {
+            padding: 12px 14px;
+            border: 2px solid #e2bebe;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .code-container input:focus {
+            border-color: #b35c5c;
+        }
+
+        .code-container button {
+            background-color: #b35c5c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .code-container button:hover {
+            background-color: #984949;
+        }
+
+        #errorMsg {
+            display: none;
+            color: #b35c5c;
+            font-style: italic;
+            margin-top: 6px;
+        }
+
+        /* Surat */
+        .letter {
+            margin-top: 36px;
+            text-align: left;
+            background-color: #fffaf5;
+            border-radius: 16px;
+            padding: 30px 28px 36px;
+            box-shadow: 0 0 20px rgba(179, 92, 92, 0.1);
+            font-size: 19px;
+            line-height: 1.7;
+            color: #4b3b3b;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform-origin: top;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease, transform 0.5s ease;
+            transform: scaleY(0.85);
+        }
+
+        .letter.open {
+            max-height: 650px;
+            opacity: 1;
+            transform: scaleY(1);
+        }
+
+        .letter strong {
+            color: #b35c5c;
+            font-weight: 700;
+        }
+
+        .signature {
+            margin-top: 40px;
+            text-align: right;
+            font-style: italic;
+            font-weight: 600;
+            color: #a05151;
+            user-select: none;
+        }
+
+        /* Popup Rating */
+        .popup {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.38);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+            user-select: none;
+        }
+
+        .popup-content {
+            background: #fff5f5;
+            border-radius: 18px;
+            padding: 38px 32px 44px;
+            width: 340px;
+            max-width: 90vw;
+            text-align: center;
+            box-shadow: 0 8px 28px rgba(179, 92, 92, 0.25);
+            animation: fadeInScale 0.38s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            font-family: 'Georgia', serif;
+        }
+
+        .popup-content h2 {
+            font-weight: 700;
+            margin-bottom: 22px;
+            color: #b35c5c;
+            font-size: 1.75rem;
+            letter-spacing: 1px;
+            user-select: text;
+        }
+
+        .stars {
+            user-select: none;
+            margin-bottom: 24px;
+        }
+
+        .stars span {
+            font-size: 42px;
+            color: #d3c5c5;
+            cursor: pointer;
+            transition: color 0.35s ease, transform 0.25s ease;
+            padding: 0 7px;
+            display: inline-block;
+            user-select: none;
+            filter: drop-shadow(1px 1px 0 #a35c5c44);
+        }
+
+        .stars span:hover,
+        .stars span:focus {
+            color: #ffdb00;
+            outline: none;
+            transform: scale(1.15);
+        }
+
+        .stars span.active {
+            color: #ffd700;
+            filter: drop-shadow(1px 1px 1px #aa8b0b);
+            transform: scale(1.2);
+        }
+
+        .popup-content p {
+            font-size: 18px;
+            margin-bottom: 28px;
+            color: #7a5757;
+            font-style: italic;
+            user-select: text;
+        }
+
+        .popup-content button {
+            background-color: #b35c5c;
+            color: white;
+            border: none;
+            padding: 14px 34px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 6px 14px rgba(179, 92, 92, 0.55);
+            user-select: none;
+            letter-spacing: 0.5px;
+        }
+
+        .popup-content button:hover {
+            background-color: #984949;
+            box-shadow: 0 8px 18px rgba(152, 73, 73, 0.75);
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.85);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .envelope {
+                padding: 24px 20px;
+                border-radius: 14px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p.intro {
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+
+            button.toggle-btn {
+                width: 100%;
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+
+            .letter {
+                font-size: 16px;
+                line-height: 1.5;
+                padding: 20px 18px 28px;
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+
+            .signature {
+                font-size: 14px;
+            }
+
+            .popup-content {
+                width: 100%;
+                max-width: 320px;
+                padding: 24px 20px 30px;
+            }
+
+            .popup-content h2 {
+                font-size: 1.4rem;
+            }
+
+            .stars span {
+                font-size: 34px;
+                padding: 0 5px;
+            }
+
+            .popup-content p {
+                font-size: 16px;
+            }
+
+            .popup-content button {
+                width: 100%;
+                font-size: 16px;
+                padding: 12px 18px;
+            }
+        }
+
+        /* Accessibility */
+        button:focus-visible,
+        .stars span:focus-visible {
+            outline: 2px solid #b35c5c;
+            outline-offset: 3px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="envelope" id="envelope" role="main" aria-label="Surat cinta untuk Refi">
+        <h1> Untuk Refi Tercinta <br />💌</h1>
+        <p class="intro">Masukkan kode rahasia dulu ya sebelum buka suratnya 🗝️</p>
+
+        <!-- Input kode -->
+        <div class="code-container">
+            <input type="password" id="codeInput" placeholder="Masukkan kode rahasia 💕" />
+            <button id="checkCodeBtn">Kirim</button>
+            <p id="errorMsg">Kode salah, coba lagi ya Bubu 🥺</p>
+        </div>
+
+        <!-- Tombol buka surat (default disembunyikan) -->
+        <button class="toggle-btn" id="toggleBtn" aria-expanded="false" aria-controls="letter" style="display:none;">
+            Buka Surat
+        </button>
+
+        <div class="letter" id="letter" aria-hidden="true" tabindex="0">
+            <p>
+                Terima kasih telah hadir dalam hidupku—membawa tawa di tiap sedihku, dan tenang di tengah
+                kekacauanku.<br />
+                Di antara semua hal indah di dunia, kamu tetap yang paling membuatku pulang.<br />
+                Kamu bukan sekadar bahagiaku… <strong>kamu rumahku.</strong>
+            </p>
+            <p>
+                Di hari ulang tahunmu ini, tak perlu kata panjang—aku cuma mau bilang:<br />
+                <strong>aku sayang kamu, selalu, tanpa tapi, tanpa nanti.</strong>
+            </p>
+
+            <div class="signature">
+                Your Handsome Husband,<br />
+                <strong>[W]</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Rating -->
+    <div class="popup" id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle"
+        aria-describedby="popupDesc">
+        <div class="popup-content" tabindex="-1">
+            <h2 id="popupTitle">💖 Seberapa kamu suka sama aku?</h2>
+            <div class="stars" id="stars" aria-label="Rating bintang" role="radiogroup" tabindex="0">
+                <span data-value="1" role="radio" tabindex="-1" aria-checked="false" aria-label="Satu bintang">☆</span>
+                <span data-value="2" role="radio" tabindex="-1" aria-checked="false" aria-label="Dua bintang">☆</span>
+                <span data-value="3" role="radio" tabindex="-1" aria-checked="false" aria-label="Tiga bintang">☆</span>
+                <span data-value="4" role="radio" tabindex="-1" aria-checked="false" aria-label="Empat bintang">☆</span>
+                <span data-value="5" role="radio" tabindex="-1" aria-checked="false" aria-label="Lima bintang">☆</span>
+            </div>
+            <p id="popupDesc">Terima kasih, Bubu! 🥺</p>
+            <button id="closePopupBtn">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggleBtn');
+        const letter = document.getElementById('letter');
+        const popup = document.getElementById('popup');
+        const stars = document.querySelectorAll('#stars span');
+        const closePopupBtn = document.getElementById('closePopupBtn');
+        const codeInput = document.getElementById('codeInput');
+        const checkCodeBtn = document.getElementById('checkCodeBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const introText = document.querySelector('.intro');
+
+        let isLetterOpen = false;
+        let currentRating = 0;
+
+        // Ganti dengan kode rahasiamu
+        const secretCode = "refi123";
+
+        // Cek kode
+        checkCodeBtn.addEventListener('click', () => {
+            if (codeInput.value.trim() === secretCode) {
+                document.getElementById('toggleBtn').style.display = 'inline-block';
+                document.querySelector('.code-container').style.display = 'none';
+                errorMsg.style.display = 'none';
+
+                // Ganti teks intro
+                introText.textContent = "Klik tombol di bawah untuk membuka atau menutup surat...";
+            } else {
+                errorMsg.style.display = 'block';
+                codeInput.value = "";
+                codeInput.focus();
+            }
+        });
+
+        // Toggle surat
+        toggleBtn.addEventListener('click', () => {
+            if (!isLetterOpen) {
+                letter.classList.add('open');
+                toggleBtn.textContent = 'Tutup Surat';
+                toggleBtn.setAttribute('aria-expanded', 'true');
+                letter.setAttribute('aria-hidden', 'false');
+                letter.focus();
+                isLetterOpen = true;
+            } else {
+                letter.classList.remove('open');
+                toggleBtn.textContent = 'Buka Surat';
+                toggleBtn.setAttribute('aria-expanded', 'false');
+                letter.setAttribute('aria-hidden', 'true');
+                toggleBtn.focus();
+                isLetterOpen = false;
+
+                setTimeout(() => {
+                    popup.style.display = 'flex';
+                    resetStars();
+                    popup.querySelector('.popup-content').focus();
+                }, 450);
+            }
+        });
+
+        // Reset stars
+        function resetStars() {
+            currentRating = 0;
+            stars.forEach(star => {
+                star.classList.remove('active');
+                star.textContent = '☆';
+                star.setAttribute('aria-checked', 'false');
+                star.setAttribute('tabindex', '-1');
+            });
+            stars[0].setAttribute('tabindex', '0');
+        }
+
+        // Update stars
+        function updateStars(rating) {
+            currentRating = rating;
+            stars.forEach((star, idx) => {
+                if (idx < rating) {
+                    star.classList.add('active');
+                    star.textContent = '★';
+                    star.setAttribute('aria-checked', 'true');
+                } else {
+                    star.classList.remove('active');
+                    star.textContent = '☆';
+                    star.setAttribute('aria-checked', 'false');
+                }
+            });
+            console.log(`Rating diberikan: ${rating}`);
+        }
+
+        stars.forEach((star, idx) => {
+            star.addEventListener('click', () => {
+                updateStars(idx + 1);
+            });
+            star.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    let nextIdx = (idx + 1) % stars.length;
+                    stars[nextIdx].focus();
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    let prevIdx = (idx - 1 + stars.length) % stars.length;
+                    stars[prevIdx].focus();
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    updateStars(idx + 1);
+                }
+            });
+        });
+
+        closePopupBtn.addEventListener('click', () => {
+            popup.style.display = 'none';
+            toggleBtn.focus();
+        });
+
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                popup.style.display = 'none';
+                toggleBtn.focus();
+            }
+        });
+
+        popup.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                const focusableElements = popup.querySelectorAll('button, [role="radio"]');
+                const firstEl = focusableElements[0];
+                const lastEl = focusableElements[focusableElements.length - 1];
+                if (e.shiftKey) {
+                    if (document.activeElement === firstEl) {
+                        e.preventDefault();
+                        lastEl.focus();
+                    }
+                } else {
+                    if (document.activeElement === lastEl) {
+                        e.preventDefault();
+                        firstEl.focus();
+                    }
+                }
+            } else if (e.key === 'Escape') {
+                popup.style.display = 'none';
+                toggleBtn.focus();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
