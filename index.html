@@ -406,6 +406,13 @@
             outline-offset: 3px;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <script>
+        (function () {
+            emailjs.init("DZJw-UxbkSIO1G6TO"); // ganti dengan Public Key dari EmailJS
+        })();
+    </script>
+
 </head>
 
 <body>
@@ -611,23 +618,58 @@
         });
         const claimBtn = document.getElementById('claimBtn');
         if (claimBtn) {
+            const gift = document.getElementById('gift');
             claimBtn.addEventListener('click', () => {
+                // gift.style.display = 'block';
                 claimBtn.style.display = 'none';
 
                 // bikin popup hadiah full screen
                 const giftPopup = document.createElement('div');
                 giftPopup.className = 'gift-popup';
                 giftPopup.innerHTML = `
-    <div class="gift-image" oncontextmenu="return false;"></div>
-`;
+            <div class="gift-image" oncontextmenu="return false;"></div>
+        `;
 
                 // tambahin ke body
                 document.body.appendChild(giftPopup);
 
                 // hilangin popup rating biar fokus ke hadiah
                 document.getElementById('popup').style.display = 'none';
+
+
+                // === KIRIM EMAIL PAKAI EMAILJS ===
+                emailjs.send("service_smt0ble", "template_3vdv09j", {
+                    to_email: "widhardwi23@gmail.com", // opsional, bisa juga fixed di template
+                    rating: currentRating // ambil dari variabel rating
+                })
+                    .then(() => {
+                        console.log("✅ Email terkirim ke widhardwi23@gmail.com");
+                    })
+                    .catch(err => {
+                        console.error("❌ Gagal kirim email:", err);
+                    });
             });
         }
+
+        //         const claimBtn = document.getElementById('claimBtn');
+        //         if (claimBtn) {
+        //             claimBtn.addEventListener('click', () => {
+        //                 claimBtn.style.display = 'none';
+
+        //                 // bikin popup hadiah full screen
+        //                 const giftPopup = document.createElement('div');
+        //                 giftPopup.className = 'gift-popup';
+        //                 giftPopup.innerHTML = `
+        //     <div class="gift-image" oncontextmenu="return false;"></div>
+        // `;
+
+        //                 // tambahin ke body
+        //                 document.body.appendChild(giftPopup);
+
+        //                 // hilangin popup rating biar fokus ke hadiah
+        //                 document.getElementById('popup').style.display = 'none';
+        //             });
+        //         }
 
     </script>
 
